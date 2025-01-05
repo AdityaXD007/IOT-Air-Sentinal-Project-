@@ -3,7 +3,6 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 Serial myPort;
-PFont orcFont;
 int iAngle;
 int iDistance;
 
@@ -11,15 +10,15 @@ void setup() {
     size(1300, 800);
     smooth();
     
-    myPort = new Serial(this, "/dev/cu.wchusbserial1410", 9600);
+    myPort = new Serial(this, "COM9", 9600);
     myPort.clear();
     myPort.bufferUntil('\n');
-    orcFont = loadFont("OCRAExtended-30.vlw");
 }
+
 void draw() 
 {
     fill(98, 245, 31);
-    textFont(orcFont);
+    textFont(createFont("Arial", 30)); // No need to set a font, it'll use default
     noStroke();
     fill(0, 4); 
     rect(0, 0, width, 0.935 * height); 
@@ -30,6 +29,7 @@ void draw()
     DrawObject();
     DrawText();
 }
+
 void serialEvent (Serial myPort) 
 {
     try {
@@ -40,10 +40,11 @@ void serialEvent (Serial myPort)
          int commaIndex = data.indexOf(",");
         String angle = data.substring(0, commaIndex);
         String distance = data.substring(commaIndex+1, data.length()-1);
-   iAngle = StringToInt(angle);
+        iAngle = StringToInt(angle);
         iDistance = StringToInt(distance);
     } catch(RuntimeException e) {}
 }
+
 void DrawRadar() 
 {
     pushMatrix();
@@ -65,15 +66,18 @@ void DrawRadar()
         DrawRadarAngledLine(angle);
     }
     line(-halfWidth * cos(radians(30)), 0, halfWidth, 0);
-        popMatrix();
+    popMatrix();
 }
+
 void DrawRadarArcLine(final float coefficient)
 {
     arc(0, 0, coefficient * width, coefficient * width, PI, TWO_PI);
 }
+
 void DrawRadarAngledLine(final int angle){
     line(0, 0, (-width/2) * cos(radians(angle)), (-width/2) * sin(radians(angle)));
 }
+
 void DrawObject() 
 {
     pushMatrix();
@@ -91,8 +95,9 @@ void DrawObject()
         
         line(x1, y1, x2, y2);
     }
-      popMatrix();
+    popMatrix();
 }
+
 void DrawLine() 
 {
     pushMatrix();
@@ -106,6 +111,7 @@ void DrawLine()
     line(0, 0, x, y);
     popMatrix();
 }
+
 void DrawText() 
 {
     pushMatrix();
@@ -126,7 +132,7 @@ void DrawText()
     if(iDistance < 40) {
         text("        " + iDistance +" cm", 0.775 * width, 0.9723 * height);
     }
-     textSize(25);
+    textSize(25);
     fill(98, 245, 60);
     translate(0.5006 * width + width/2 * cos(radians(30)), 0.9093 * height - width/2 * sin(radians(30)));
     rotate(-radians(-60));
@@ -137,8 +143,9 @@ void DrawText()
     translate(0.497 * width + width/2 * cos(radians(60)), 0.9112 * height - width/2 * sin(radians(60)));
     rotate(-radians(-30));
     text("60°",0,0);
-     resetMatrix();
-     translate(0.493 * width + width/2 * cos(radians(90)), 0.9167 * height - width/2 * sin(radians(90)));
+    resetMatrix();
+    
+    translate(0.493 * width + width/2 * cos(radians(90)), 0.9167 * height - width/2 * sin(radians(90)));
     rotate(radians(0));
     text("90°",0,0);
     resetMatrix();
@@ -162,4 +169,5 @@ int StringToInt(String string)
             value *= 10;
             value += (string.charAt(i) - '0');
         }}
-     return value;}
+    return value;
+}
